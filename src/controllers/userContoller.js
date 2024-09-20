@@ -49,7 +49,7 @@ const register = async (req, res) => {
       status : 201
     });
   } catch (error) {
-    res.status(500).json({ message: JWT_SECRET });
+    res.status(500).json({ message: error });
   }
 };
 
@@ -84,7 +84,7 @@ const login = async (req, res) => {
       status : 200, 
       data: {accessToken, refreshToken} });
   } catch (error) {
-    res.status(500).json({ message: JWT_SECRET });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
