@@ -29,6 +29,9 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
     
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
     const roleData = await findRoleByName(role);
     if (!roleData) {
       return res.status(400).json({ message: 'Invalid role' });
@@ -72,12 +75,12 @@ const login = async (req, res) => {
 
     await updateRefreshToken(refreshToken, user.id_users);
     // Send refresh token as an HTTP-only cookie
-    // res.cookie('refreshToken', refreshToken, {
-    //   httpOnly: true,  // This prevents JavaScript from accessing the cookie
-    //   maxAge: 1 * 24 * 60 * 60 * 1000, 
-    //   secure: true, // Only secure in production
-    //   sameSite: 'None' // Allows cookies to be sent cross-origin
-    // });    
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,  // This prevents JavaScript from accessing the cookie
+      maxAge: 1 * 24 * 60 * 60 * 1000, 
+      secure: true, // Only secure in production
+      sameSite: 'None' // Allows cookies to be sent cross-origin
+    });    
 
     res.status(200).json({
       message : "Login Successfuly",
