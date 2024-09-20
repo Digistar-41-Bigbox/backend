@@ -27,7 +27,7 @@ app.use('/api/v1/status', statusRoutes);
 const PORT = process.env.PORT || 5000;
 // Domain Response
 app.get('/', (req, res) => {
-  res.status(200).send('<h1>Digistar Bigbox 41 API</h1>');
+  res.status(200).send(`<h1>Server running on port ${PORT}</h1>`);
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
