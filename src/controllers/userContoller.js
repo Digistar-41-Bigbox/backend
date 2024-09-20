@@ -29,9 +29,6 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
     
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
     const roleData = await findRoleByName(role);
     if (!roleData) {
       return res.status(400).json({ message: 'Invalid role' });
@@ -52,7 +49,7 @@ const register = async (req, res) => {
       status : 201
     });
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: JWT_SECRET });
   }
 };
 
