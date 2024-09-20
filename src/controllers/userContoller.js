@@ -84,7 +84,7 @@ const login = async (req, res) => {
       status : 200, 
       data: {accessToken, refreshToken} });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error });
   }
 };
 
