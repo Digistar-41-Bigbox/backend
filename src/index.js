@@ -25,9 +25,10 @@ app.use('/api/v1/pic', picRoutes);
 app.use('/api/v1/status', statusRoutes);
 
 const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET;
 // Domain Response
 app.get('/', (req, res) => {
-  res.status(200).send(`<h1>Server running on port ${PORT}</h1>`);
+  res.status(200).send(`<h1>Server running on port ${JWT_SECRET}</h1>`);
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
