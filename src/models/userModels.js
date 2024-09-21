@@ -37,10 +37,21 @@ const getUserByRefreshToken = async (refreshToken) => {
   return result.rows[0];
 };
 
+const getUserbyId = async (id_users) => {
+
+  const query = `
+    SELECT u.name, u.email
+    FROM users u
+    WHERE u.id_users = $1`;
+  const result = await pool.query(query, [id_users]);
+  return result.rows[0];
+};
+
 module.exports = {
   findUserByEmail,
   createUser,
   findRoleByName,
   updateRefreshToken,
-  getUserByRefreshToken
+  getUserByRefreshToken,
+  getUserbyId
 };
