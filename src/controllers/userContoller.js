@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment-timezone');
-const { findUserByEmail, createUser, findRoleByName, updateRefreshToken, getUserByRefreshToken } = require('../models/userModels.js');
+const { findUserByEmail, createUser, findRoleByName, updateRefreshToken, getUserByRefreshToken, getUserbyId } = require('../models/userModels.js');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -128,9 +128,28 @@ const logout = async (req, res) => {
   }
 };
 
+const getCurrentUser = async (req, res) => {
+  try {
+
+    const result_data = await getUserbyId(req.user.userId);
+    if (!result_data || result_data.length === 0) {
+      return res.status(404).json({ message: 'No data found', status: 404 });
+    }
+    
+    res.status(200).json({ 
+      message : "Data is available",
+      data : result_data,
+      status : 201
+    });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while inserting users", status: 500});
+  }
+};
+
 module.exports = {
   register,
   login,
   refreshToken,
-  logout
+  logout,
+  getCurrentUser
 };
