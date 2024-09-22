@@ -31,35 +31,31 @@ const getTotalLeadsByStatus = async () => {
   return result.rows;
 };
 
-const getAllLeads = async (pageNumber, pageSize, search = '', asc = true, latest = true, id_pic) => {
+const getAllLeads = async (pageNumber, pageSize, search = '', asc = true, latest = true, id_pic = null) => {
   const offset = (pageNumber - 1) * pageSize;
-  // Sorting conditions
-  let orderBy = 'created_at DESC';  // Default sort by latest created_at
 
-  if (!latest) {
-    orderBy = 'created_at ASC';  // Sort by oldest if latest is false
-  }
+  let orderBy = 'created_at, updated_at DESC';
+  if (!latest) orderBy = 'created_at ASC';
+  if (asc) orderBy = 'nama_instansi ASC';
+  else orderBy = 'nama_instansi DESC';
 
-  if (asc) {
-    orderBy = 'nama_instansi ASC';  // Sort by name ascending if asc is true
-  } else {
-    orderBy = 'nama_instansi DESC'; // Sort by name descending if asc is false
-  }
-  let id_pic_que = "";
-  if (id_pic){
-    id_pic_que = `AND u.id_users = `;
-  }else{
-    id_pic_que = "";
-  }
+  // Conditional query construction for id_pic
+  const idPicCondition = id_pic ? `AND u.id_users = $4` : '';
   const query = `
-    SELECT l.id_leads, l.nama_instansi, l.nama_pribadi, l.no_hp, l.email, u.name, s.name_status, l.notes, l.category_company
+    SELECT l.id_leads, l.nama_instansi, l.nama_pribadi, l.no_hp, l.email, u.id_users, u.name, s.name_status, l.notes, l.category_company
     FROM leads l
     LEFT JOIN users u ON l.id_users = u.id_users
     JOIN status s ON l.status = s.id_status
-    WHERE nama_instansi ILIKE $3 ${id_pic_que} $4
-    ORDER BY ${orderBy}
-    LIMIT $1 OFFSET $2;`;
-  const result = await pool.query(query, [pageSize, offset, `%${search}%`,id_pic]);
+    WHERE nama_instansi ILIKE $1 ${idPicCondition}
+    ORDER BY ${orderBy};
+  `;
+
+  const values = [ `%${search}%`];
+  
+  // Add id_pic to values array if provided
+  if (id_pic) values.push(id_pic);
+
+  const result = await pool.query(query, values);
   return result.rows;
 };
 
@@ -102,7 +98,7 @@ const getLeadById = async (id_leads) => {
 };
 
 const updateLeadById = async (id_leads, data) => {
-  const { nama_instansi, nama_pribadi, no_hp, email, id_users, status, updated_at, notes, category_company } = data;
+  const { nama_instansi, nama_pribadi, no_hp, email, id_users, name_status, updated_at, notes, category_company } = data;
 
   const query = `
     UPDATE leads
@@ -119,7 +115,7 @@ const updateLeadById = async (id_leads, data) => {
     WHERE id_leads = $10
   `;
   
-  const values = [nama_instansi, nama_pribadi, no_hp, email, id_users, status, updated_at, notes, category_company, id_leads];
+  const values = [nama_instansi, nama_pribadi, no_hp, email, id_users, name_status, updated_at, notes, category_company, id_leads];
   
   const result = await pool.query(query, values);
   return result;
