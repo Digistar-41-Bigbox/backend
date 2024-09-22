@@ -123,13 +123,22 @@ const getLeadById = async (req, res) => {
 const updateLeadById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nama_instansi, nama_pribadi, no_hp, email, id_users, status, notes, category_company } = req.body;
+    let { nama_instansi, nama_pribadi, no_hp, email, id_users, name_status, notes, category_company } = req.body;
+
+    if (name_status==='Hot'){
+      name_status = '3';
+    }else if(name_status==='Warm'){
+      name_status = '2';
+    }else{
+      name_status = '1';
+    }
+
     // Validate the ID
     if (!id) {
       return res.status(400).json({ message: 'Server Error', status: 400 });
     }
     // Validate the request body
-    if (!nama_instansi || !nama_pribadi || !no_hp || !email || !id_users || !status) {
+    if (!nama_instansi || !nama_pribadi || !no_hp || !email || !id_users || !name_status) {
       return res.status(400).json({ message: 'Missing required fields', status: 400 });
     }
     const updated_at = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
@@ -140,7 +149,7 @@ const updateLeadById = async (req, res) => {
       no_hp,
       email,
       id_users,
-      status,
+      name_status,
       updated_at, 
       notes, 
       category_company
